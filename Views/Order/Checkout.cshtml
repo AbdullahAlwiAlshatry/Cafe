@@ -1,0 +1,66 @@
+@model CheckoutViewModel
+@{ ViewData["Title"] = "بيانات الطلب"; }
+<div class="form-shell">
+    <div class="steps" aria-label="مراحل الطلب">
+        <span class="done" data-n="1"><small>الاختيار</small></span><i class="done"></i>
+        <span class="done" data-n="2"><small>الفاتورة</small></span><i class="done"></i>
+        <span class="active" data-n="3" aria-current="step"><small>بياناتك</small></span>
+    </div>
+    <h2>أين نوصل طلبك؟</h2>
+    <p class="muted">أدخل بيانات التواصل وموقع التوصيل. سنرسل رابط تأكيد إلى بريدك.</p>
+
+    <div class="summary-box" id="checkoutSummary">
+        <div class="cart-total"><span><span id="checkoutCount">0</span> صنف في طلبك</span><strong id="checkoutTotal">0.00</strong></div>
+    </div>
+
+    <form asp-action="Checkout" method="post" id="checkoutForm" novalidate>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="CartJson" id="CartJson" />
+
+        <div class="form-row-2">
+            <div>
+                <label asp-for="CustomerName">الاسم الكامل</label>
+                <input asp-for="CustomerName" class="form-control" placeholder="اسم صاحب الطلب" autocomplete="name" />
+                <span asp-validation-for="CustomerName" class="text-danger"></span>
+            </div>
+            <div>
+                <label asp-for="Phone">رقم الهاتف</label>
+                <input asp-for="Phone" class="form-control" placeholder="7xxxxxxxx" inputmode="tel" autocomplete="tel" dir="ltr" />
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+        </div>
+
+        <label asp-for="Email">البريد الإلكتروني</label>
+        <input asp-for="Email" class="form-control" placeholder="name@gmail.com" inputmode="email" autocomplete="email" dir="ltr" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+
+        <label asp-for="Location">العنوان (الشارع، المبنى، الدور)</label>
+        <input asp-for="Location" class="form-control" placeholder="مثال: شارع جمال، عمارة النور، الدور الثاني" autocomplete="street-address" />
+        <span asp-validation-for="Location" class="text-danger"></span>
+
+        <label asp-for="LocationDetails">علامة مميزة قريبة</label>
+        <textarea asp-for="LocationDetails" class="form-control" rows="3" placeholder="مثال: بجانب صيدلية الشفاء، البوابة الزرقاء"></textarea>
+        <span asp-validation-for="LocationDetails" class="text-danger"></span>
+
+        <div class="stack mt-4">
+            <button class="btn-primary-cafe w-100" type="submit" id="checkoutSubmit">إرسال الطلب وتأكيده بالبريد</button>
+            <a href="/Order/Review" class="btn-outline-cafe w-100">الرجوع للفاتورة</a>
+        </div>
+    </form>
+</div>
+@section Scripts {
+    <script>
+        (function () {
+            var cart = getCart();
+            if (!cart.length) { location.replace('/?empty=1#menu'); return; }
+            document.getElementById('CartJson').value = JSON.stringify(cart.map(function (x) { return { productId: x.id, quantity: x.qty }; }));
+            document.getElementById('checkoutCount').textContent = cart.reduce(function (s, x) { return s + x.qty; }, 0);
+            document.getElementById('checkoutTotal').textContent = cart.reduce(function (s, x) { return s + x.price * x.qty; }, 0).toFixed(2);
+            document.getElementById('checkoutForm').addEventListener('submit', function () {
+                var b = document.getElementById('checkoutSubmit');
+                b.textContent = 'جارٍ الإرسال…';
+                setTimeout(function () { b.disabled = true; }, 0);
+            });
+        })();
+    </script>
+}

@@ -1,0 +1,21 @@
+@{ ViewData["Title"] = "مراجعة الفاتورة"; }
+<div class="form-shell">
+    <div class="steps" aria-label="مراحل الطلب">
+        <span class="done" data-n="1"><small>الاختيار</small></span><i class="done"></i>
+        <span class="active" data-n="2" aria-current="step"><small>الفاتورة</small></span><i></i>
+        <span data-n="3"><small>بياناتك</small></span>
+    </div>
+    <h2>راجع طلبك</h2>
+    <p class="muted">عدّل الكميات من هنا إن احتجت، ثم تابع لإدخال موقع التوصيل.</p>
+
+    <div id="reviewItems" class="review-list"></div>
+
+    <div class="summary-box">
+        <div class="cart-total"><span>الإجمالي</span><strong id="reviewTotal">0.00</strong></div>
+    </div>
+
+    <div class="stack">
+        <a href="/Order/Checkout" class="btn-primary-cafe w-100" id="continueCheckout">تأكيد الفاتورة والمتابعة</a>
+        <a href="/#menu" class="btn-outline-cafe w-100">إضافة أصناف أخرى</a>
+    </div>
+</div>

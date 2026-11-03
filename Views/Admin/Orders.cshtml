@@ -1,0 +1,77 @@
+@model List<Order>
+@{
+    ViewData["Title"] = "الطلبات";
+    var confirmed = Model.Where(o => o.Status == "Confirmed").ToList();
+    var pending = Model.Count(o => o.Status == "Pending");
+}
+<div class="admin-head">
+    <div>
+        <h1>الطلبات</h1>
+        <p>آخر طلبات العملاء وحالة تأكيدها.</p>
+    </div>
+    <div class="admin-actions">
+        <a class="btn-outline-cafe" href="/Admin/Orders">تحديث</a>
+    </div>
+</div>
+
+<nav class="admin-tabs" aria-label="أقسام الإدارة">
+    <a href="/Admin">المشروبات</a>
+    <a href="/Admin/Orders" class="active" aria-current="page">الطلبات</a>
+</nav>
+
+<div class="stat-row">
+    <div class="stat"><span>طلبات مؤكدة</span><b>@confirmed.Count</b></div>
+    <div class="stat"><span>بانتظار تأكيد البريد</span><b>@pending</b></div>
+    <div class="stat"><span>إجمالي المؤكد</span><b>@(confirmed.Sum(o => o.Total).ToString("0.00"))</b></div>
+</div>
+
+@if (Model.Count == 0)
+{
+    <div class="empty-state">
+        <h3>لا توجد طلبات بعد</h3>
+        <p>ستظهر الطلبات هنا فور إرسالها من العملاء.</p>
+    </div>
+}
+else
+{
+    <div class="table-card table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>رقم الطلب</th>
+                    <th>العميل</th>
+                    <th class="hide-sm">الهاتف</th>
+                    <th>الإجمالي</th>
+                    <th>الحالة</th>
+                    <th class="hide-sm">التاريخ</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var o in Model)
+                {
+                    <tr>
+                        <td><strong dir="ltr">#@o.OrderNumber</strong></td>
+                        <td>@o.CustomerName</td>
+                        <td class="hide-sm" dir="ltr"><a href="tel:@o.Phone">@o.Phone</a></td>
+                        <td><strong>@o.Total.ToString("0.00")</strong></td>
+                        <td>
+                            @if (o.Status == "Pending")
+                            {
+                                <span class="pill pill-wait">بانتظار التأكيد</span>
+                            }
+                            else if (o.Status == "Confirmed")
+                            {
+                                <span class="pill pill-ok">مؤكد</span>
+                            }
+                            else
+                            {
+                                <span class="pill">@o.Status</span>
+                            }
+                        </td>
+                        <td class="hide-sm"><small class="text-muted">@o.CreatedAt.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</small></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

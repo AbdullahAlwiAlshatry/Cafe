@@ -1,0 +1,177 @@
+@model List<Product>
+@{
+    ViewData["Title"] = "قائمة المشروبات";
+    var inv = System.Globalization.CultureInfo.InvariantCulture;
+    var config = Context.RequestServices.GetService(typeof(Microsoft.Extensions.Configuration.IConfiguration)) as Microsoft.Extensions.Configuration.IConfiguration;
+    var waPhone = config?["WhatsApp:Phone"];
+    var waLink = string.IsNullOrWhiteSpace(waPhone) ? "#" : "https://wa.me/" + waPhone;
+}
+
+<section class="hero">
+    <div class="hero-copy">
+        <h1>مزاجك يبدأ من هنا</h1>
+        <p>اختر مشروبك من القائمة، راجع فاتورتك، وأكّد طلبك ببريدك. نحضّره طازجاً ونوصله إلى موقعك.</p>
+        <div class="hero-actions">
+            <a href="#menu" class="btn-primary-cafe">تصفّح القائمة</a>
+            <a href="/Home/MenuPdf" class="btn-outline-cafe">تحميل القائمة PDF</a>
+        </div>
+        <ul class="hero-facts">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>يُحضَّر عند الطلب</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>تأكيد آمن عبر البريد</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>توصيل إلى موقعك</li>
+        </ul>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+        <svg viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+            <g class="steam" stroke-width="4" opacity=".85">
+                <path d="M72 62c-10-12 10-18 0-32"/>
+                <path d="M96 58c-10-12 10-18 0-32"/>
+                <path d="M120 62c-10-12 10-18 0-32"/>
+            </g>
+            <path d="M44 84h104v26a44 44 0 0 1-44 44h-16a44 44 0 0 1-44-44V84Z" fill="rgba(255,255,255,.08)"/>
+            <path d="M148 94h8a18 18 0 0 1 0 36h-10"/>
+            <path d="M34 168h132"/>
+        </svg>
+        <div class="hero-badge">
+            <i></i>
+            <div><b>نستقبل الطلبات الآن</b><span>@(Model.Count(p => p.IsAvailable)) مشروب متاح اليوم</span></div>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="menu" aria-labelledby="menuTitle">
+    <div class="section-head">
+        <div>
+            <h2 id="menuTitle">قائمة المشروبات</h2>
+            <p>اضغط على صورة المشروب لرؤية التفاصيل والصور.</p>
+        </div>
+        <div class="menu-tools">
+            <label class="search-box">
+                <span class="visually-hidden">ابحث في القائمة</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                <input type="search" id="menuSearch" placeholder="ابحث عن مشروب…" autocomplete="off" />
+            </label>
+        </div>
+    </div>
+
+    <div class="menu-grid" id="menuGrid">
+        @if (Model.Count == 0)
+        {
+            <div class="empty-state">
+                <h3>القائمة قيد التحضير</h3>
+                <p>لم تُضف مشروبات بعد. عُد قريباً أو راسلنا عبر واتساب.</p>
+            </div>
+        }
+        @foreach (var p in Model)
+        {
+            var price = p.Price.ToString("0.00", inv);
+            <article class="product-card @(p.IsAvailable ? "" : "is-off")" data-search="@p.Name @p.Description">
+                <button type="button" class="product-media" data-bs-toggle="modal" data-bs-target="#product-@p.Id" aria-label="تفاصيل @p.Name">
+                    <img src="@p.MainImage" alt="@p.Name" loading="lazy" onerror="this.onerror=null;this.src='/images/coffee.svg'">
+                    @if (!p.IsAvailable)
+                    {
+                        <span class="sold-out">غير متاح حالياً</span>
+                    }
+                    @if (p.Images.Count > 0)
+                    {
+                        <span class="gallery-count">@(p.Images.Count + 1) صور</span>
+                    }
+                </button>
+                <div class="p-body">
+                    <h3>@p.Name</h3>
+                    <p class="p-desc">@p.Description</p>
+                    <div class="p-foot">
+                        <span class="price">@price</span>
+                        <button type="button" class="btn-add" data-id="@p.Id" data-name="@p.Name" data-price="@price" disabled="@(!p.IsAvailable)" aria-label="أضف @p.Name إلى السلة">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                            <span>أضف</span>
+                        </button>
+                    </div>
+                </div>
+            </article>
+        }
+        <div class="empty-state" id="searchEmpty" hidden>
+            <h3>لا يوجد مشروب بهذا الاسم</h3>
+            <p>جرّب كلمة أخرى، أو امسح البحث لعرض القائمة كاملة.</p>
+        </div>
+    </div>
+</section>
+
+@foreach (var p in Model)
+{
+    var price = p.Price.ToString("0.00", inv);
+    <div class="modal fade product-modal" id="product-@p.Id" tabindex="-1" aria-labelledby="product-@p.Id-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="إغلاق">×</button>
+                <div class="modal-body">
+                    <div id="gallery-@p.Id" class="carousel slide">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active"><img class="d-block w-100" src="@p.MainImage" alt="@p.Name" onerror="this.onerror=null;this.src='/images/coffee.svg'"></div>
+                            @foreach (var img in p.Images)
+                            {
+                                <div class="carousel-item"><img class="d-block w-100" src="@img.ImagePath" alt="@p.Name" loading="lazy"></div>
+                            }
+                        </div>
+                        @if (p.Images.Count > 0)
+                        {
+                            <button class="carousel-control-prev" type="button" data-bs-target="#gallery-@p.Id" data-bs-slide="prev"><span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="visually-hidden">السابق</span></button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#gallery-@p.Id" data-bs-slide="next"><span class="carousel-control-next-icon" aria-hidden="true"></span><span class="visually-hidden">التالي</span></button>
+                        }
+                    </div>
+                    <div class="modal-info">
+                        <h3 id="product-@p.Id-title">@p.Name</h3>
+                        @if (!string.IsNullOrWhiteSpace(p.Description))
+                        {
+                            <p>@p.Description</p>
+                        }
+                        <div class="p-foot">
+                            <span class="price">@price</span>
+                            <button type="button" class="btn-add" data-id="@p.Id" data-name="@p.Name" data-price="@price" disabled="@(!p.IsAvailable)">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                                <span>@(p.IsAvailable ? "أضف إلى السلة" : "غير متاح حالياً")</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<section class="section" id="how" aria-labelledby="howTitle">
+    <div class="section-head">
+        <div>
+            <h2 id="howTitle">طريقة الطلب</h2>
+            <p>ثلاث خطوات من القائمة إلى باب بيتك.</p>
+        </div>
+    </div>
+    <ol class="steps-row">
+        <li>
+            <div class="step-no">1</div>
+            <h3>اختر مشروباتك</h3>
+            <p>أضف ما تحب إلى السلة وعدّل الكميات في أي وقت.</p>
+        </li>
+        <li>
+            <div class="step-no">2</div>
+            <h3>راجع الفاتورة</h3>
+            <p>تأكد من الأصناف والإجمالي، ثم أدخل موقع التوصيل.</p>
+        </li>
+        <li>
+            <div class="step-no">3</div>
+            <h3>أكّد من بريدك</h3>
+            <p>نرسل لك رابط تأكيد، وبمجرد الضغط عليه نبدأ التحضير.</p>
+        </li>
+    </ol>
+</section>
+
+<section class="visit-band">
+    <div>
+        <h2>عندك طلب خاص؟</h2>
+        <p>طلبات المكاتب والمناسبات أو أي استفسار — راسلنا مباشرة ونرد عليك بسرعة.</p>
+    </div>
+    <div class="actions">
+        <a href="/Home/MenuPdf" class="btn-outline-cafe">تحميل القائمة</a>
+        <a href="@waLink" class="btn-primary-cafe" target="_blank" rel="noopener">راسلنا على واتساب</a>
+    </div>
+</section>

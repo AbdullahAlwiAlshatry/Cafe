@@ -1,0 +1,22 @@
+@model Order
+@{ ViewData["Title"] = "تم تأكيد الطلب"; }
+<div class="status-card">
+    <div class="status-icon success" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+    </div>
+    <h1>تم تأكيد طلبك</h1>
+    <p>شكراً @Model.CustomerName، بدأنا تحضير طلبك الآن.</p>
+    <span class="order-no">#@Model.OrderNumber</span>
+    <div class="invoice-mini">
+        @foreach (var x in Model.Items)
+        {
+            <div><span>@x.ProductName × @x.Quantity</span><b>@((x.UnitPrice * x.Quantity).ToString("0.00"))</b></div>
+        }
+        <hr />
+        <div><strong>الإجمالي</strong><strong>@Model.Total.ToString("0.00")</strong></div>
+    </div>
+    <a href="/" class="btn-primary-cafe mt-4">العودة للقائمة</a>
+</div>
+@section Scripts {
+    <script>window.clearCart && window.clearCart();</script>
+}

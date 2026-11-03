@@ -1,0 +1,86 @@
+@model List<Product>
+@{
+    ViewData["Title"] = "إدارة المشروبات";
+    var available = Model.Count(p => p.IsAvailable);
+}
+<div class="admin-head">
+    <div>
+        <h1>المشروبات</h1>
+        <p>مرحباً @User.Identity?.Name — أدر القائمة التي يراها عملاؤك.</p>
+    </div>
+    <div class="admin-actions">
+        <a class="btn-primary-cafe" href="/Admin/Create">+ إضافة مشروب</a>
+        <form method="post" action="/Admin/Logout" class="d-inline">
+            @Html.AntiForgeryToken()
+            <button class="btn-outline-cafe" type="submit">تسجيل الخروج</button>
+        </form>
+    </div>
+</div>
+
+<nav class="admin-tabs" aria-label="أقسام الإدارة">
+    <a href="/Admin" class="active" aria-current="page">المشروبات</a>
+    <a href="/Admin/Orders">الطلبات</a>
+</nav>
+
+<div class="stat-row">
+    <div class="stat"><span>كل المشروبات</span><b>@Model.Count</b></div>
+    <div class="stat"><span>متاحة للطلب</span><b>@available</b></div>
+    <div class="stat"><span>مخفية</span><b>@(Model.Count - available)</b></div>
+</div>
+
+@if (Model.Count == 0)
+{
+    <div class="empty-state">
+        <h3>لا توجد مشروبات بعد</h3>
+        <p class="mb-3">أضف أول مشروب ليظهر في قائمة العملاء.</p>
+        <a class="btn-primary-cafe" href="/Admin/Create">+ إضافة مشروب</a>
+    </div>
+}
+else
+{
+    <div class="table-card table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>الصنف</th>
+                    <th>السعر</th>
+                    <th>الحالة</th>
+                    <th class="text-end"><span class="visually-hidden">الإجراءات</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="item-cell">
+                                <img class="admin-thumb" src="@p.MainImage" alt="" onerror="this.onerror=null;this.src='/images/coffee.svg'" />
+                                <span class="fw-semibold">@p.Name</span>
+                            </div>
+                        </td>
+                        <td><strong>@p.Price.ToString("0.00")</strong></td>
+                        <td>
+                            @if (p.IsAvailable)
+                            {
+                                <span class="pill pill-ok">متاح</span>
+                            }
+                            else
+                            {
+                                <span class="pill pill-off">مخفي</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="row-actions">
+                                <a href="/Admin/Edit/@p.Id" class="btn-row">تعديل</a>
+                                <form method="post" action="/Admin/Delete/@p.Id" class="d-inline" onsubmit="return confirm('حذف هذا المشروب نهائياً؟');">
+                                    @Html.AntiForgeryToken()
+                                    <button class="btn-row danger" type="submit">حذف</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

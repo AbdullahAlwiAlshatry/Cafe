@@ -1,0 +1,20 @@
+@model Order
+@{ ViewData["Title"] = "بانتظار التأكيد"; }
+<div class="status-card">
+    <div class="status-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+    </div>
+    <h1>افتح بريدك لتأكيد الطلب</h1>
+    <p>أرسلنا رابط التأكيد إلى <b dir="ltr">@Model.Email</b>. اضغط عليه لنبدأ تحضير طلبك.</p>
+    <span class="order-no">#@Model.OrderNumber</span>
+    @if (ViewBag.Notice != null)
+    {
+        <div class="alert alert-warning mt-3">@ViewBag.Notice</div>
+    }
+    @if (ViewBag.DevVerificationLink != null)
+    {
+        <div class="alert alert-info mt-3">وضع التجربة المحلي: <a href="@ViewBag.DevVerificationLink">تأكيد الطلب تجريبياً</a></div>
+    }
+    <p class="muted mt-3" style="font-size:14px">لم تصلك الرسالة؟ تحقق من مجلد الرسائل غير المرغوب فيها.</p>
+    <a href="/" class="btn-outline-cafe mt-4">العودة للقائمة</a>
+</div>

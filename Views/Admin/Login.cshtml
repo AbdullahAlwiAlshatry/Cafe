@@ -1,0 +1,20 @@
+@{ ViewData["Title"] = "دخول الإدارة"; }
+<div class="form-shell admin-login">
+    <div class="status-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+    </div>
+    <h2>دخول الإدارة</h2>
+    <p class="muted text-center">لإدارة القائمة ومتابعة الطلبات.</p>
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger mt-3" role="alert">@ViewBag.Error</div>
+    }
+    <form method="post">
+        @Html.AntiForgeryToken()
+        <label for="username">اسم المستخدم</label>
+        <input id="username" name="username" class="form-control" autocomplete="username" required autofocus />
+        <label for="password">كلمة المرور</label>
+        <input id="password" name="password" type="password" class="form-control" autocomplete="current-password" required />
+        <button class="btn-primary-cafe w-100 mt-4" type="submit">تسجيل الدخول</button>
+    </form>
+</div>

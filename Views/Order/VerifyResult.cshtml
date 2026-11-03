@@ -1,0 +1,17 @@
+@model bool
+@{ ViewData["Title"] = "نتيجة التحقق"; }
+<div class="status-card">
+    @if (Model)
+    {
+        <div class="status-icon success" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+        <h2>هذا الطلب مؤكد مسبقاً</h2>
+        <p>لا حاجة لأي خطوة إضافية، طلبك قيد التحضير.</p>
+    }
+    else
+    {
+        <div class="status-icon error" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg></div>
+        <h2>رابط التأكيد غير صالح</h2>
+        <p>تأكد من فتح الرابط كاملاً من رسالة البريد، أو أنشئ طلباً جديداً.</p>
+    }
+    <a href="/" class="btn-primary-cafe mt-3">العودة للقائمة</a>
+</div>
