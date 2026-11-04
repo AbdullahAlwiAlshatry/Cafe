@@ -122,11 +122,11 @@ dotnet run
 
 The complete source code is available on GitHub:
 
-**[AbdullahAlwiAlshatry / Cafe](https://github.com/AbdullahAlwiAlshatry/Cafe)**
+**[AbdullahAlwiAlshateri / Cafe](https://github.com/AbdullahAlwiAlshatry/Cafe)**
 
 ## 👨‍💻 Developer
 
-**Abdullah Alwi Alshatry**
+**Abdullah Alwi Alshateri**
 
 ---
 
